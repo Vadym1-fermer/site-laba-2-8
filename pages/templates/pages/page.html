@@ -1,0 +1,9 @@
+{% extends "pages/base.html" %}
+
+{% block content %}
+    <p>{{ content }}</p>
+
+    <p>
+        <a href="{% url 'pages:home' %}">На головну</a>
+    </p>
+{% endblock %}

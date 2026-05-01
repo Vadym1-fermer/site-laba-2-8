@@ -1,0 +1,16 @@
+{% extends "pages/base.html" %}
+
+{% block content %}
+    <p>Головна сторінка аплікації. Нижче є посилання на всі інші сторінки.</p>
+
+    <nav>
+        <ul>
+            {% for page in pages %}
+                <li>
+                    <a href="{% url 'pages:'|add:page.url_name %}">{{ page.title }}</a>
+                    <span>{{ page.description }}</span>
+                </li>
+            {% endfor %}
+        </ul>
+    </nav>
+{% endblock %}
