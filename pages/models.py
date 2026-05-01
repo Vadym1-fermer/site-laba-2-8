@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.validators import MaxValueValidator, MinValueValidator
 
 
 class ClothingCategory(models.Model):
@@ -55,3 +56,40 @@ class Order(models.Model):
 
     def __str__(self):
         return f"{self.customer_name}: {self.product}"
+
+
+class NewsletterSubscriber(models.Model):
+    email = models.EmailField(unique=True)
+    name = models.CharField(max_length=100, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return self.email
+
+
+class ProductRating(models.Model):
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.CASCADE,
+        related_name="ratings",
+    )
+    user_name = models.CharField(max_length=100)
+    score = models.PositiveSmallIntegerField(
+        validators=[
+            MinValueValidator(1),
+            MaxValueValidator(5),
+        ],
+    )
+    comment = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"{self.product}: {self.score}/5"

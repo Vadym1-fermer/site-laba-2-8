@@ -1,0 +1,33 @@
+{% extends "pages/base.html" %}
+
+{% block content %}
+    <section class="hero">
+        <h1 data-uk="Кошик" data-en="Cart">Cart</h1>
+        <a class="button" href="{% url 'pages:home' %}" data-uk="Продовжити покупки" data-en="Continue shopping">Continue shopping</a>
+    </section>
+
+    <section class="cart-list">
+        {% for item in cart_items %}
+            <article class="cart-item">
+                <div>
+                    <h2>{{ item.product.name }}</h2>
+                    <p>{{ item.product.category.name }} / {{ item.product.color }}</p>
+                    <p class="product-meta"><span data-uk="Кількість" data-en="Quantity">Quantity</span>: {{ item.quantity }}</p>
+                </div>
+                <p class="price">{{ item.subtotal }} UAH</p>
+            </article>
+        {% empty %}
+            <article class="content-panel">
+                <h2 data-uk="Кошик порожній" data-en="Your cart is empty">Your cart is empty</h2>
+                <p data-uk="Відкрий сторінку товару та додай його в кошик." data-en="Open a product page and add an item to the cart.">Open a product page and add an item to the cart.</p>
+            </article>
+        {% endfor %}
+    </section>
+
+    {% if cart_items %}
+        <section class="form-panel">
+            <h2 data-uk="Разом" data-en="Total">Total</h2>
+            <p class="price">{{ total }} UAH</p>
+        </section>
+    {% endif %}
+{% endblock %}

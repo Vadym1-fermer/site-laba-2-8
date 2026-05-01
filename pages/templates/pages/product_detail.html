@@ -18,7 +18,48 @@
             <p class="product-meta">{{ product.category.name }} / <span data-uk="Розмір" data-en="Size">Size</span> {{ product.size }} / {{ product.color }}</p>
             <p>{{ product.description }}</p>
             <p class="price">{{ product.price }} UAH</p>
-            <button class="buy-button" type="button" disabled data-uk="Купити" data-en="Buy">Buy</button>
+
+            {% if average_rating %}
+                <p><strong data-uk="Середня оцінка" data-en="Average rating">Average rating</strong>: {{ average_rating|floatformat:1 }} / 5</p>
+            {% else %}
+                <p data-uk="Оцінок ще немає." data-en="No ratings yet.">No ratings yet.</p>
+            {% endif %}
+
+            <form action="{% url 'pages:product_detail' product.id %}" method="post">
+                {% csrf_token %}
+                <button class="buy-button" type="submit" name="add_to_cart" data-uk="Додати в кошик" data-en="Add to cart">Add to cart</button>
+            </form>
+        </div>
+    </section>
+
+    <section class="form-panel">
+        <h2 data-uk="Оцінити товар" data-en="Rate this product">Rate this product</h2>
+        <form class="form-grid" action="{% url 'pages:product_detail' product.id %}" method="post">
+            {% csrf_token %}
+            <div>
+                <label for="{{ rating_form.user_name.id_for_label }}" data-uk="Ім'я" data-en="Name">Name</label>
+                {{ rating_form.user_name }}
+            </div>
+            <div>
+                <label for="{{ rating_form.score.id_for_label }}" data-uk="Оцінка від 1 до 5" data-en="Score from 1 to 5">Score from 1 to 5</label>
+                {{ rating_form.score }}
+            </div>
+            <div>
+                <label for="{{ rating_form.comment.id_for_label }}" data-uk="Коментар" data-en="Comment">Comment</label>
+                {{ rating_form.comment }}
+            </div>
+            <button class="submit-button" type="submit" name="rating_submit" data-uk="Надіслати оцінку" data-en="Submit rating">Submit rating</button>
+        </form>
+
+        <div class="rating-list">
+            {% for rating in ratings %}
+                <article class="content-panel">
+                    <strong>{{ rating.user_name }}: {{ rating.score }} / 5</strong>
+                    <p>{{ rating.comment }}</p>
+                </article>
+            {% empty %}
+                <p data-uk="Будь першим, хто оцінить цей товар." data-en="Be the first to rate this product.">Be the first to rate this product.</p>
+            {% endfor %}
         </div>
     </section>
 {% endblock %}

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import ClothingCategory, Order, Product
+from .models import ClothingCategory, NewsletterSubscriber, Order, Product, ProductRating
 
 
 @admin.register(ClothingCategory)
@@ -20,3 +20,16 @@ class OrderAdmin(admin.ModelAdmin):
     list_display = ("customer_name", "product", "quantity", "phone", "created_at", "updated_at")
     list_filter = ("product",)
     search_fields = ("customer_name", "phone")
+
+
+@admin.register(NewsletterSubscriber)
+class NewsletterSubscriberAdmin(admin.ModelAdmin):
+    list_display = ("email", "name", "created_at", "updated_at")
+    search_fields = ("email", "name")
+
+
+@admin.register(ProductRating)
+class ProductRatingAdmin(admin.ModelAdmin):
+    list_display = ("product", "user_name", "score", "created_at", "updated_at")
+    list_filter = ("product", "score")
+    search_fields = ("product__name", "user_name", "comment")

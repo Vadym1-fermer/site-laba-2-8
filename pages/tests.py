@@ -1,8 +1,14 @@
 from django.test import TestCase
 from django.urls import reverse
 
-from .admin import ClothingCategoryAdmin, OrderAdmin, ProductAdmin
-from .models import ClothingCategory, Order, Product
+from .admin import (
+    ClothingCategoryAdmin,
+    NewsletterSubscriberAdmin,
+    OrderAdmin,
+    ProductAdmin,
+    ProductRatingAdmin,
+)
+from .models import ClothingCategory, NewsletterSubscriber, Order, Product, ProductRating
 
 
 class PagesTests(TestCase):
@@ -88,8 +94,51 @@ class PagesTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "https://example.com/tshirt.jpg")
         self.assertContains(response, "499.00 UAH")
-        self.assertContains(response, "Buy")
+        self.assertContains(response, "Add to cart")
+        self.assertContains(response, "Rate this product")
         self.assertContains(response, reverse("pages:home"))
+
+    def test_product_rating_is_saved_and_average_is_shown(self):
+        response = self.client.post(
+            reverse("pages:product_detail", args=[self.product.id]),
+            {
+                "user_name": "Vadim",
+                "score": 5,
+                "comment": "Good quality",
+                "rating_submit": "1",
+            },
+            follow=True,
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(ProductRating.objects.count(), 1)
+        self.assertContains(response, "5.0 / 5")
+
+    def test_product_can_be_added_to_cart(self):
+        response = self.client.post(
+            reverse("pages:product_detail", args=[self.product.id]),
+            {"add_to_cart": "1"},
+            follow=True,
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Cart")
+        self.assertContains(response, "White T-shirt")
+        self.assertContains(response, "499.00 UAH")
+
+    def test_newsletter_signup_saves_email(self):
+        response = self.client.post(
+            reverse("pages:newsletter_signup"),
+            {
+                "name": "Vadim",
+                "email": "vadim@example.com",
+                "next": reverse("pages:home"),
+            },
+            follow=True,
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(NewsletterSubscriber.objects.filter(email="vadim@example.com").exists())
 
 
 class ModelTests(TestCase):
@@ -131,4 +180,12 @@ class AdminTests(TestCase):
         self.assertEqual(
             OrderAdmin.list_display,
             ("customer_name", "product", "quantity", "phone", "created_at", "updated_at"),
+        )
+        self.assertEqual(
+            NewsletterSubscriberAdmin.list_display,
+            ("email", "name", "created_at", "updated_at"),
+        )
+        self.assertEqual(
+            ProductRatingAdmin.list_display,
+            ("product", "user_name", "score", "created_at", "updated_at"),
         )

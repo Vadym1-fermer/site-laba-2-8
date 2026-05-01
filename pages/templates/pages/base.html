@@ -17,9 +17,7 @@
             --border: #30363d;
         }
 
-        * {
-            box-sizing: border-box;
-        }
+        * { box-sizing: border-box; }
 
         body {
             margin: 0;
@@ -36,9 +34,7 @@
             text-decoration: none;
         }
 
-        a:hover {
-            color: var(--accent-strong);
-        }
+        a:hover { color: var(--accent-strong); }
 
         .site-header,
         .site-footer {
@@ -140,13 +136,9 @@
         }
 
         .language-toggle[data-language="en"] .language-en,
-        .language-toggle[data-language="uk"] .language-uk {
-            color: var(--bg);
-        }
+        .language-toggle[data-language="uk"] .language-uk { color: var(--bg); }
 
-        .page {
-            padding: 44px 0 0;
-        }
+        .page { padding: 44px 0 0; }
 
         h1 {
             margin: 0;
@@ -156,9 +148,7 @@
 
         h2,
         h3,
-        p {
-            margin-top: 0;
-        }
+        p { margin-top: 0; }
 
         p {
             color: var(--muted);
@@ -173,11 +163,27 @@
 
         .content-panel,
         .product-card,
-        .product-detail {
+        .product-detail,
+        .form-panel,
+        .cart-item,
+        .message {
             padding: 20px;
             background: var(--surface);
             border: 1px solid var(--border);
             border-radius: 8px;
+        }
+
+        .messages {
+            display: grid;
+            gap: 10px;
+            margin-bottom: 20px;
+            padding: 0;
+            list-style: none;
+        }
+
+        .message {
+            color: var(--accent-strong);
+            padding: 12px 14px;
         }
 
         .product-card {
@@ -219,9 +225,7 @@
             filter: brightness(0.92);
         }
 
-        .product-card h3 {
-            margin: 14px 0 8px;
-        }
+        .product-card h3 { margin: 14px 0 8px; }
 
         .product-meta {
             color: var(--muted);
@@ -240,7 +244,8 @@
             gap: 24px;
         }
 
-        .buy-button {
+        .buy-button,
+        .submit-button {
             min-height: 44px;
             padding: 0 18px;
             color: var(--bg);
@@ -248,16 +253,62 @@
             border: 0;
             border-radius: 8px;
             font-weight: 800;
-            cursor: not-allowed;
-            opacity: 0.85;
+            cursor: pointer;
+        }
+
+        .form-grid,
+        .cart-list {
+            display: grid;
+            gap: 16px;
+        }
+
+        .form-panel {
+            margin-top: 24px;
+        }
+
+        label {
+            display: block;
+            margin: 12px 0 6px;
+            color: var(--text);
+            font-weight: 700;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            min-height: 42px;
+            padding: 10px 12px;
+            color: var(--text);
+            background: var(--surface-soft);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+        }
+
+        textarea { resize: vertical; }
+
+        .rating-list {
+            display: grid;
+            gap: 10px;
+            margin-top: 16px;
+        }
+
+        .cart-item {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 16px;
         }
 
         .footer-inner {
             display: grid;
-            grid-template-columns: 1fr auto;
-            gap: 20px;
+            grid-template-columns: 1fr minmax(260px, 360px);
+            gap: 28px;
             padding: 24px 0;
             color: var(--muted);
+        }
+
+        .newsletter-form {
+            display: grid;
+            gap: 10px;
         }
 
         @media (max-width: 760px) {
@@ -268,17 +319,12 @@
                 flex-direction: column;
             }
 
-            .product-detail {
-                grid-template-columns: 1fr;
-            }
+            .product-detail,
+            .cart-item { grid-template-columns: 1fr; }
 
-            h1 {
-                font-size: 32px;
-            }
+            h1 { font-size: 32px; }
 
-            p {
-                font-size: 16px;
-            }
+            p { font-size: 16px; }
         }
     </style>
 </head>
@@ -289,6 +335,8 @@
 
             <nav class="menu" aria-label="Main menu">
                 <a href="{% url 'pages:home' %}" data-uk="Головна" data-en="Home">Home</a>
+                <a href="{% url 'pages:cart' %}" data-uk="Кошик" data-en="Cart">Cart</a>
+                <span class="button">{{ cart_count }}</span>
                 {% for page in pages %}
                     <a href="{% url 'pages:'|add:page.url_name %}">{{ page.title }}</a>
                 {% endfor %}
@@ -310,6 +358,14 @@
     </header>
 
     <main class="page">
+        {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                    <li class="message">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
         {% block content %}{% endblock %}
     </main>
 
@@ -319,9 +375,14 @@
                 <strong data-uk="Магазин одягу" data-en="Clothing Store">Clothing Store</strong>
                 <p data-uk="Темний каталог для зручного перегляду товарів і швидкого вибору категорій." data-en="Dark mode catalog for comfortable shopping and quick category browsing.">Dark mode catalog for comfortable shopping and quick category browsing.</p>
             </div>
-            <div>
-                <p data-uk="Доставка, примірка та консультація щодо розміру." data-en="Delivery, fitting, and size consultation.">Delivery, fitting, and size consultation.</p>
-            </div>
+            <form class="newsletter-form" action="{% url 'pages:newsletter_signup' %}" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                <strong data-uk="Підписка на розсилку" data-en="Newsletter signup">Newsletter signup</strong>
+                {{ newsletter_form.name }}
+                {{ newsletter_form.email }}
+                <button class="submit-button" type="submit" data-uk="Підписатися" data-en="Subscribe">Subscribe</button>
+            </form>
         </div>
     </footer>
     <script>
