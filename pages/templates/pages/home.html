@@ -1,16 +1,28 @@
 {% extends "pages/base.html" %}
 
 {% block content %}
-    <p>Головна сторінка аплікації. Нижче є посилання на всі інші сторінки.</p>
+    <section class="hero">
+        <h1>Clothing Store</h1>
+        <p>Choose a clothing category in the header menu and browse products loaded from the database.</p>
+    </section>
 
-    <nav>
-        <ul>
-            {% for page in pages %}
-                <li>
-                    <a href="{% url 'pages:'|add:page.url_name %}">{{ page.title }}</a>
-                    <span>{{ page.description }}</span>
-                </li>
+    <section>
+        <h2>Products</h2>
+
+        <div class="product-grid">
+            {% for product in products %}
+                <article class="product-card">
+                    <h3>{{ product.name }}</h3>
+                    <p class="product-meta">{{ product.category.name }} / Size {{ product.size }} / {{ product.color }}</p>
+                    <p>{{ product.description }}</p>
+                    <p class="price">{{ product.price }} UAH</p>
+                </article>
+            {% empty %}
+                <article class="content-panel">
+                    <h3>No products yet</h3>
+                    <p>Add products in the Django admin panel to show them on the home page.</p>
+                </article>
             {% endfor %}
-        </ul>
-    </nav>
+        </div>
+    </section>
 {% endblock %}

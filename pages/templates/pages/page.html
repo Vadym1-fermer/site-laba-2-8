@@ -1,9 +1,15 @@
 {% extends "pages/base.html" %}
 
 {% block content %}
-    <p>{{ content }}</p>
+    <section class="hero">
+        <h1>{{ title }}</h1>
+    </section>
 
-    <p>
-        <a href="{% url 'pages:home' %}">На головну</a>
-    </p>
+    <section class="content-panel">
+        <p>{{ content }}</p>
+
+        <p>
+            <a href="{% url 'pages:home' %}">Back to home</a>
+        </p>
+    </section>
 {% endblock %}

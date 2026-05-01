@@ -6,6 +6,32 @@ from .models import ClothingCategory, Order, Product
 
 
 class PagesTests(TestCase):
+    def setUp(self):
+        self.category = ClothingCategory.objects.create(
+            name="T-shirts",
+            description="Casual clothing",
+        )
+        self.other_category = ClothingCategory.objects.create(
+            name="Jeans",
+            description="Denim clothing",
+        )
+        self.product = Product.objects.create(
+            category=self.category,
+            name="White T-shirt",
+            size="M",
+            color="White",
+            price="499.00",
+            description="Basic cotton T-shirt",
+        )
+        Product.objects.create(
+            category=self.other_category,
+            name="Blue Jeans",
+            size="32",
+            color="Blue",
+            price="1299.00",
+            description="Classic jeans",
+        )
+
     def test_home_page_has_links_to_other_pages(self):
         response = self.client.get(reverse("pages:home"))
 
@@ -14,6 +40,10 @@ class PagesTests(TestCase):
         self.assertContains(response, "Contacts")
         self.assertContains(response, reverse("pages:about"))
         self.assertContains(response, reverse("pages:contacts"))
+        self.assertContains(response, "Clothing Store")
+        self.assertContains(response, "White T-shirt")
+        self.assertContains(response, "Blue Jeans")
+        self.assertContains(response, "All categories")
 
     def test_inner_pages_have_link_to_home(self):
         for page_name in ("pages:about", "pages:contacts"):
@@ -21,6 +51,13 @@ class PagesTests(TestCase):
 
             self.assertEqual(response.status_code, 200)
             self.assertContains(response, reverse("pages:home"))
+
+    def test_home_page_filters_products_by_category(self):
+        response = self.client.get(reverse("pages:home"), {"category": self.category.id})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "White T-shirt")
+        self.assertNotContains(response, "Blue Jeans")
 
 
 class ModelTests(TestCase):
