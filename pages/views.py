@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 
 from .models import ClothingCategory, Product
 
@@ -25,19 +25,35 @@ def get_site_context():
 
 
 def home(request):
-    selected_category_id = request.GET.get("category")
     products = Product.objects.select_related("category")
-
-    if selected_category_id:
-        products = products.filter(category_id=selected_category_id)
 
     context = {
         **get_site_context(),
         "title": "Clothing Store",
         "products": products,
-        "selected_category_id": selected_category_id,
     }
     return render(request, "pages/home.html", context)
+
+
+def category_detail(request, pk):
+    category = get_object_or_404(ClothingCategory, pk=pk)
+    context = {
+        **get_site_context(),
+        "title": category.name,
+        "category": category,
+        "products": category.products.all(),
+    }
+    return render(request, "pages/category_detail.html", context)
+
+
+def product_detail(request, pk):
+    product = get_object_or_404(Product.objects.select_related("category"), pk=pk)
+    context = {
+        **get_site_context(),
+        "title": product.name,
+        "product": product,
+    }
+    return render(request, "pages/product_detail.html", context)
 
 
 def about(request):

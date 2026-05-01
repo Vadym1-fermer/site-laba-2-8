@@ -1,0 +1,24 @@
+{% extends "pages/base.html" %}
+
+{% block content %}
+    <section class="hero">
+        <h1>{{ product.name }}</h1>
+        <a class="button" href="{% url 'pages:category_detail' product.category.id %}"><span data-uk="Назад до категорії" data-en="Back to">Back to</span> {{ product.category.name }}</a>
+        <a class="button" href="{% url 'pages:home' %}" data-uk="Назад на головну" data-en="Back to home">Back to home</a>
+    </section>
+
+    <section class="product-detail">
+        <div>
+            {% if product.image_url %}
+                <img src="{{ product.image_url }}" alt="{{ product.name }}">
+            {% endif %}
+        </div>
+
+        <div>
+            <p class="product-meta">{{ product.category.name }} / <span data-uk="Розмір" data-en="Size">Size</span> {{ product.size }} / {{ product.color }}</p>
+            <p>{{ product.description }}</p>
+            <p class="price">{{ product.price }} UAH</p>
+            <button class="buy-button" type="button" disabled data-uk="Купити" data-en="Buy">Buy</button>
+        </div>
+    </section>
+{% endblock %}

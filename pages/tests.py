@@ -21,6 +21,7 @@ class PagesTests(TestCase):
             size="M",
             color="White",
             price="499.00",
+            image_url="https://example.com/tshirt.jpg",
             description="Basic cotton T-shirt",
         )
         Product.objects.create(
@@ -29,7 +30,26 @@ class PagesTests(TestCase):
             size="32",
             color="Blue",
             price="1299.00",
+            image_url="https://example.com/jeans.jpg",
             description="Classic jeans",
+        )
+        Product.objects.create(
+            category=self.category,
+            name="Black T-shirt",
+            size="L",
+            color="Black",
+            price="549.00",
+            image_url="https://example.com/black-tshirt.jpg",
+            description="Minimal black cotton T-shirt",
+        )
+        Product.objects.create(
+            category=self.category,
+            name="Oversized T-shirt",
+            size="XL",
+            color="Gray",
+            price="599.00",
+            image_url="https://example.com/oversized-tshirt.jpg",
+            description="Loose gray T-shirt",
         )
 
     def test_home_page_has_links_to_other_pages(self):
@@ -43,7 +63,8 @@ class PagesTests(TestCase):
         self.assertContains(response, "Clothing Store")
         self.assertContains(response, "White T-shirt")
         self.assertContains(response, "Blue Jeans")
-        self.assertContains(response, "All categories")
+        self.assertContains(response, "All products")
+        self.assertContains(response, "View product")
 
     def test_inner_pages_have_link_to_home(self):
         for page_name in ("pages:about", "pages:contacts"):
@@ -52,12 +73,23 @@ class PagesTests(TestCase):
             self.assertEqual(response.status_code, 200)
             self.assertContains(response, reverse("pages:home"))
 
-    def test_home_page_filters_products_by_category(self):
-        response = self.client.get(reverse("pages:home"), {"category": self.category.id})
+    def test_category_page_has_only_products_from_selected_category(self):
+        response = self.client.get(reverse("pages:category_detail", args=[self.category.id]))
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "White T-shirt")
+        self.assertContains(response, "Black T-shirt")
+        self.assertContains(response, "Oversized T-shirt")
         self.assertNotContains(response, "Blue Jeans")
+
+    def test_product_page_has_photo_price_and_buy_button(self):
+        response = self.client.get(reverse("pages:product_detail", args=[self.product.id]))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "https://example.com/tshirt.jpg")
+        self.assertContains(response, "499.00 UAH")
+        self.assertContains(response, "Buy")
+        self.assertContains(response, reverse("pages:home"))
 
 
 class ModelTests(TestCase):
@@ -72,6 +104,7 @@ class ModelTests(TestCase):
             size="M",
             color="White",
             price="499.00",
+            image_url="https://example.com/tshirt.jpg",
         )
         order = Order.objects.create(
             product=product,

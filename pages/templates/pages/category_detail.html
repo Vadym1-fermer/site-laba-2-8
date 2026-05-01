@@ -1,0 +1,33 @@
+{% extends "pages/base.html" %}
+
+{% block content %}
+    <section class="hero">
+        <h1>{{ category.name }}</h1>
+        <p>{{ category.description }}</p>
+        <a class="button" href="{% url 'pages:home' %}" data-uk="Назад на головну" data-en="Back to home">Back to home</a>
+    </section>
+
+    <section>
+        <h2 data-uk="Товари в цій категорії" data-en="Products in this category">Products in this category</h2>
+
+        <div class="product-grid">
+            {% for product in products %}
+                <article class="product-card">
+                    {% if product.image_url %}
+                        <img src="{{ product.image_url }}" alt="{{ product.name }}">
+                    {% endif %}
+                    <h3>{{ product.name }}</h3>
+                    <p class="product-meta"><span data-uk="Розмір" data-en="Size">Size</span> {{ product.size }} / {{ product.color }}</p>
+                    <p>{{ product.description }}</p>
+                    <p class="price">{{ product.price }} UAH</p>
+                    <a class="button" href="{% url 'pages:product_detail' product.id %}" data-uk="Переглянути товар" data-en="View product">View product</a>
+                </article>
+            {% empty %}
+                <article class="content-panel">
+                    <h3 data-uk="У цій категорії ще немає товарів" data-en="No products in this category">No products in this category</h3>
+                    <p data-uk="Додай товари для цієї категорії в адмін-панелі." data-en="Add products for this category in the admin panel.">Add products for this category in the admin panel.</p>
+                </article>
+            {% endfor %}
+        </div>
+    </section>
+{% endblock %}
