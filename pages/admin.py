@@ -1,3 +1,22 @@
 from django.contrib import admin
+from .models import ClothingCategory, Order, Product
 
-# Register your models here.
+
+@admin.register(ClothingCategory)
+class ClothingCategoryAdmin(admin.ModelAdmin):
+    list_display = ("name", "created_at", "updated_at")
+    search_fields = ("name",)
+
+
+@admin.register(Product)
+class ProductAdmin(admin.ModelAdmin):
+    list_display = ("name", "category", "size", "color", "price", "created_at", "updated_at")
+    list_filter = ("category",)
+    search_fields = ("name", "description", "color")
+
+
+@admin.register(Order)
+class OrderAdmin(admin.ModelAdmin):
+    list_display = ("customer_name", "product", "quantity", "phone", "created_at", "updated_at")
+    list_filter = ("product",)
+    search_fields = ("customer_name", "phone")
