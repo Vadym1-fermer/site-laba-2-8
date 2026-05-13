@@ -28,6 +28,16 @@
         <section class="form-panel">
             <h2 data-uk="Разом" data-en="Total">Total</h2>
             <p class="price">{{ total }} UAH</p>
+            {% if user.is_authenticated %}
+                <form action="{% url 'pages:checkout' %}" method="post">
+                    {% csrf_token %}
+                    <button class="submit-button" type="submit" data-uk="Оформити замовлення" data-en="Create order">Create order</button>
+                </form>
+            {% else %}
+                <p>
+                    <a href="{% url 'pages:login' %}" data-uk="Увійдіть, щоб оформити замовлення" data-en="Log in to create an order">Log in to create an order</a>
+                </p>
+            {% endif %}
         </section>
     {% endif %}
 {% endblock %}

@@ -1,0 +1,18 @@
+{% extends "pages/base.html" %}
+
+{% block content %}
+    <section class="hero">
+        <h1>{{ title }}</h1>
+        {% if title == "Login" %}
+            <a class="button" href="{% url 'pages:password_reset_request' %}" data-uk="Змінити пароль" data-en="Reset password">Reset password</a>
+        {% endif %}
+    </section>
+
+    <section class="form-panel">
+        <form class="form-grid" method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button class="submit-button" type="submit">{{ button_text }}</button>
+        </form>
+    </section>
+{% endblock %}

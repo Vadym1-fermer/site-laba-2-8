@@ -337,6 +337,14 @@
                 <a href="{% url 'pages:home' %}" data-uk="Головна" data-en="Home">Home</a>
                 <a href="{% url 'pages:cart' %}" data-uk="Кошик" data-en="Cart">Cart</a>
                 <span class="button">{{ cart_count }}</span>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'pages:account' %}" data-uk="Кабінет" data-en="Account">Account</a>
+                    <a href="{% url 'pages:password_reset_request' %}" data-uk="Змінити пароль" data-en="Change password">Change password</a>
+                    <a href="{% url 'pages:logout' %}" data-uk="Вийти" data-en="Logout">Logout</a>
+                {% else %}
+                    <a href="{% url 'pages:login' %}" data-uk="Увійти" data-en="Login">Login</a>
+                    <a href="{% url 'pages:register' %}" data-uk="Зареєструватись" data-en="Register">Register</a>
+                {% endif %}
                 {% for page in pages %}
                     <a href="{% url 'pages:'|add:page.url_name %}">{{ page.title }}</a>
                 {% endfor %}

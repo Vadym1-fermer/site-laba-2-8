@@ -1,4 +1,6 @@
-from django.test import TestCase
+from django.contrib.auth.models import User
+from django.core import mail
+from django.test import TestCase, override_settings
 from django.urls import reverse
 
 from .admin import (
@@ -8,7 +10,14 @@ from .admin import (
     ProductAdmin,
     ProductRatingAdmin,
 )
-from .models import ClothingCategory, NewsletterSubscriber, Order, Product, ProductRating
+from .models import (
+    ClothingCategory,
+    NewsletterSubscriber,
+    Order,
+    PasswordResetCode,
+    Product,
+    ProductRating,
+)
 
 
 class PagesTests(TestCase):
@@ -140,6 +149,89 @@ class PagesTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTrue(NewsletterSubscriber.objects.filter(email="vadim@example.com").exists())
 
+    def test_auth_buttons_change_by_user_state(self):
+        anonymous_response = self.client.get(reverse("pages:home"))
+
+        self.assertContains(anonymous_response, "Login")
+        self.assertContains(anonymous_response, "Register")
+        self.assertNotContains(anonymous_response, "Logout")
+
+        user = User.objects.create_user(username="vadim", password="StrongPass12345")
+        self.client.force_login(user)
+        auth_response = self.client.get(reverse("pages:home"))
+
+        self.assertContains(auth_response, "Account")
+        self.assertContains(auth_response, "Logout")
+        self.assertNotContains(auth_response, "Register")
+
+    def test_register_page_creates_authenticated_user(self):
+        response = self.client.post(
+            reverse("pages:register"),
+            {
+                "username": "newuser",
+                "email": "newuser@example.com",
+                "password1": "StrongPass12345",
+                "password2": "StrongPass12345",
+            },
+            follow=True,
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(User.objects.filter(username="newuser").exists())
+        self.assertContains(response, "Account")
+
+    @override_settings(EMAIL_BACKEND="django.core.mail.backends.locmem.EmailBackend")
+    def test_password_reset_sends_code_and_changes_password(self):
+        user = User.objects.create_user(
+            username="resetuser",
+            email="reset@example.com",
+            password="OldStrongPass12345",
+        )
+        response = self.client.post(
+            reverse("pages:password_reset_request"),
+            {"email": "reset@example.com"},
+            follow=True,
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(mail.outbox), 1)
+        reset_code = PasswordResetCode.objects.get(user=user)
+
+        response = self.client.post(
+            reverse("pages:password_reset_confirm"),
+            {
+                "email": "reset@example.com",
+                "code": reset_code.code,
+                "new_password": "NewStrongPass12345",
+            },
+            follow=True,
+        )
+
+        self.assertEqual(response.status_code, 200)
+        user.refresh_from_db()
+        self.assertTrue(user.check_password("NewStrongPass12345"))
+
+    def test_account_shows_user_orders_and_admin_sees_all_orders(self):
+        user = User.objects.create_user(username="buyer", password="StrongPass12345")
+        admin = User.objects.create_superuser(username="admin", password="StrongPass12345")
+        Order.objects.create(
+            user=user,
+            product=self.product,
+            customer_name="buyer",
+            quantity=1,
+            phone="Not provided",
+        )
+
+        self.client.force_login(user)
+        response = self.client.get(reverse("pages:account"))
+        self.assertContains(response, "White T-shirt")
+        self.assertContains(response, "My orders")
+
+        self.client.force_login(admin)
+        response = self.client.get(reverse("pages:account"))
+        self.assertContains(response, "White T-shirt")
+        self.assertContains(response, "All orders")
+
 
 class ModelTests(TestCase):
     def test_product_and_order_are_linked_to_parent_tables(self):
@@ -179,7 +271,7 @@ class AdminTests(TestCase):
         )
         self.assertEqual(
             OrderAdmin.list_display,
-            ("customer_name", "product", "quantity", "phone", "created_at", "updated_at"),
+            ("customer_name", "user", "product", "quantity", "phone", "created_at", "updated_at"),
         )
         self.assertEqual(
             NewsletterSubscriberAdmin.list_display,

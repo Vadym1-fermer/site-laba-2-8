@@ -1,5 +1,7 @@
+from django.conf import settings
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
+from django.utils import timezone
 
 
 class ClothingCategory(models.Model):
@@ -40,6 +42,13 @@ class Product(models.Model):
 
 
 class Order(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        related_name="orders",
+        blank=True,
+        null=True,
+    )
     product = models.ForeignKey(
         Product,
         on_delete=models.CASCADE,
@@ -93,3 +102,24 @@ class ProductRating(models.Model):
 
     def __str__(self):
         return f"{self.product}: {self.score}/5"
+
+
+class PasswordResetCode(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="password_reset_codes",
+    )
+    code = models.CharField(max_length=6)
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField()
+    used = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def is_valid(self):
+        return not self.used and self.expires_at >= timezone.now()
+
+    def __str__(self):
+        return f"{self.user}: {self.code}"

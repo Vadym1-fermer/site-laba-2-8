@@ -1,9 +1,24 @@
+import random
+from datetime import timedelta
+
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.models import User
+from django.core.mail import send_mail
 from django.contrib import messages
 from django.db.models import Avg
 from django.shortcuts import get_object_or_404, redirect, render
+from django.utils import timezone
 
-from .forms import NewsletterSubscriberForm, ProductRatingForm
-from .models import ClothingCategory, NewsletterSubscriber, Product
+from .forms import (
+    NewsletterSubscriberForm,
+    PasswordResetConfirmForm,
+    PasswordResetRequestForm,
+    ProductRatingForm,
+    RegisterForm,
+)
+from .models import ClothingCategory, NewsletterSubscriber, Order, PasswordResetCode, Product
 
 
 PAGES = [
@@ -130,6 +145,29 @@ def cart(request):
     return render(request, "pages/cart.html", context)
 
 
+@login_required
+def checkout(request):
+    cart_data = get_cart(request)
+    if not cart_data:
+        messages.error(request, "Your cart is empty.")
+        return redirect("pages:cart")
+
+    products = Product.objects.filter(id__in=cart_data.keys())
+    for product in products:
+        Order.objects.create(
+            user=request.user,
+            product=product,
+            customer_name=request.user.get_username(),
+            quantity=cart_data.get(str(product.id), 1),
+            phone="Not provided",
+        )
+
+    request.session["cart"] = {}
+    request.session.modified = True
+    messages.success(request, "Order created successfully.")
+    return redirect("pages:account")
+
+
 def newsletter_signup(request):
     if request.method != "POST":
         return redirect("pages:home")
@@ -167,3 +205,139 @@ def contacts(request):
         "content": "Contact us to ask about sizes, colors, availability, and delivery.",
     }
     return render(request, "pages/page.html", context)
+
+
+def login_view(request):
+    if request.user.is_authenticated:
+        return redirect("pages:account")
+
+    form = AuthenticationForm(request, data=request.POST or None)
+    if request.method == "POST" and form.is_valid():
+        login(request, form.get_user())
+        return redirect("pages:account")
+
+    return render(
+        request,
+        "pages/auth_form.html",
+        {
+            **site_context(request),
+            "title": "Login",
+            "form": form,
+            "button_text": "Login",
+        },
+    )
+
+
+def logout_view(request):
+    logout(request)
+    return redirect("pages:home")
+
+
+def register_view(request):
+    if request.user.is_authenticated:
+        return redirect("pages:account")
+
+    form = RegisterForm(request.POST or None)
+    if request.method == "POST" and form.is_valid():
+        user = form.save(commit=False)
+        user.email = form.cleaned_data["email"]
+        user.save()
+        login(request, user)
+        messages.success(request, "Registration completed.")
+        return redirect("pages:account")
+
+    return render(
+        request,
+        "pages/auth_form.html",
+        {
+            **site_context(request),
+            "title": "Register",
+            "form": form,
+            "button_text": "Register",
+        },
+    )
+
+
+@login_required
+def account(request):
+    if request.user.is_staff:
+        orders = Order.objects.select_related("product", "user").all()
+    else:
+        orders = Order.objects.select_related("product").filter(user=request.user)
+
+    return render(
+        request,
+        "pages/account.html",
+        {
+            **site_context(request),
+            "title": "Account",
+            "orders": orders,
+        },
+    )
+
+
+def password_reset_request(request):
+    form = PasswordResetRequestForm(request.POST or None)
+    if request.method == "POST" and form.is_valid():
+        email = form.cleaned_data["email"]
+        user = User.objects.filter(email=email).first()
+        if user:
+            code = f"{random.randint(100000, 999999)}"
+            PasswordResetCode.objects.create(
+                user=user,
+                code=code,
+                expires_at=timezone.now() + timedelta(minutes=15),
+            )
+            send_mail(
+                "Password reset code",
+                f"Your temporary password reset code is: {code}",
+                None,
+                [email],
+                fail_silently=False,
+            )
+        messages.success(request, "If this email exists, a reset code has been sent.")
+        return redirect("pages:password_reset_confirm")
+
+    return render(
+        request,
+        "pages/auth_form.html",
+        {
+            **site_context(request),
+            "title": "Reset password",
+            "form": form,
+            "button_text": "Send code",
+        },
+    )
+
+
+def password_reset_confirm(request):
+    form = PasswordResetConfirmForm(request.POST or None)
+    if request.method == "POST" and form.is_valid():
+        user = User.objects.filter(email=form.cleaned_data["email"]).first()
+        reset_code = None
+        if user:
+            reset_code = PasswordResetCode.objects.filter(
+                user=user,
+                code=form.cleaned_data["code"],
+            ).first()
+
+        if reset_code and reset_code.is_valid():
+            user.set_password(form.cleaned_data["new_password"])
+            user.save()
+            reset_code.used = True
+            reset_code.save()
+            messages.success(request, "Password changed. You can log in now.")
+            return redirect("pages:login")
+
+        messages.error(request, "Invalid or expired reset code.")
+
+    return render(
+        request,
+        "pages/auth_form.html",
+        {
+            **site_context(request),
+            "title": "Enter reset code",
+            "form": form,
+            "button_text": "Change password",
+        },
+    )
