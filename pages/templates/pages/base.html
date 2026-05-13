@@ -292,6 +292,75 @@
             margin-top: 16px;
         }
 
+        .reviews-layout {
+            display: grid;
+            grid-template-columns: minmax(220px, 320px) 1fr;
+            gap: 24px;
+            align-items: start;
+        }
+
+        .rating-summary,
+        .review-card {
+            padding: 18px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+        }
+
+        .stars,
+        .star-input {
+            color: #fbbf24;
+            font-size: 22px;
+            letter-spacing: 2px;
+        }
+
+        .star-options {
+            display: flex;
+            flex-direction: row-reverse;
+            justify-content: flex-end;
+            gap: 4px;
+        }
+
+        .star-options input {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .star-options label {
+            margin: 0;
+            color: #4b5563;
+            font-size: 30px;
+            cursor: pointer;
+        }
+
+        .star-options input:checked ~ label,
+        .star-options label:hover,
+        .star-options label:hover ~ label {
+            color: #fbbf24;
+        }
+
+        .rating-row {
+            display: grid;
+            grid-template-columns: 24px 1fr 24px;
+            gap: 10px;
+            align-items: center;
+            color: var(--muted);
+        }
+
+        .rating-bar {
+            height: 8px;
+            overflow: hidden;
+            background: var(--surface-soft);
+            border-radius: 999px;
+        }
+
+        .rating-bar span {
+            display: block;
+            height: 100%;
+            background: #fbbf24;
+        }
+
         .cart-item {
             display: grid;
             grid-template-columns: 1fr auto;
@@ -320,6 +389,7 @@
             }
 
             .product-detail,
+            .reviews-layout,
             .cart-item { grid-template-columns: 1fr; }
 
             h1 { font-size: 32px; }

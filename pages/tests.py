@@ -104,7 +104,8 @@ class PagesTests(TestCase):
         self.assertContains(response, "https://example.com/tshirt.jpg")
         self.assertContains(response, "499.00 UAH")
         self.assertContains(response, "Add to cart")
-        self.assertContains(response, "Rate this product")
+        self.assertContains(response, "Reviews and ratings")
+        self.assertContains(response, "Write a review")
         self.assertContains(response, reverse("pages:home"))
 
     def test_product_rating_is_saved_and_average_is_shown(self):

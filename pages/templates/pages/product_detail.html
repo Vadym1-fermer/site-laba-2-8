@@ -33,33 +33,70 @@
     </section>
 
     <section class="form-panel">
-        <h2 data-uk="Оцінити товар" data-en="Rate this product">Rate this product</h2>
-        <form class="form-grid" action="{% url 'pages:product_detail' product.id %}" method="post">
-            {% csrf_token %}
-            <div>
-                <label for="{{ rating_form.user_name.id_for_label }}" data-uk="Ім'я" data-en="Name">Name</label>
-                {{ rating_form.user_name }}
-            </div>
-            <div>
-                <label for="{{ rating_form.score.id_for_label }}" data-uk="Оцінка від 1 до 5" data-en="Score from 1 to 5">Score from 1 to 5</label>
-                {{ rating_form.score }}
-            </div>
-            <div>
-                <label for="{{ rating_form.comment.id_for_label }}" data-uk="Коментар" data-en="Comment">Comment</label>
-                {{ rating_form.comment }}
-            </div>
-            <button class="submit-button" type="submit" name="rating_submit" data-uk="Надіслати оцінку" data-en="Submit rating">Submit rating</button>
-        </form>
+        <h2 data-uk="Відгуки та оцінки" data-en="Reviews and ratings">Reviews and ratings</h2>
 
-        <div class="rating-list">
-            {% for rating in ratings %}
-                <article class="content-panel">
-                    <strong>{{ rating.user_name }}: {{ rating.score }} / 5</strong>
-                    <p>{{ rating.comment }}</p>
-                </article>
-            {% empty %}
-                <p data-uk="Будь першим, хто оцінить цей товар." data-en="Be the first to rate this product.">Be the first to rate this product.</p>
-            {% endfor %}
+        <div class="reviews-layout">
+            <aside class="rating-summary">
+                {% if average_rating %}
+                    <h3>{{ average_rating|floatformat:1 }} / 5</h3>
+                    <div class="stars">★★★★★</div>
+                    <p>{{ rating_count_total }} reviews</p>
+                {% else %}
+                    <h3 data-uk="Оцінок ще немає" data-en="No ratings yet">No ratings yet</h3>
+                    <p data-uk="Будь першим, хто оцінить товар." data-en="Be the first to rate this product.">Be the first to rate this product.</p>
+                {% endif %}
+
+                {% for row in rating_rows %}
+                    <div class="rating-row">
+                        <span>{{ row.score }}</span>
+                        <div class="rating-bar">
+                            <span style="width: {{ row.percent }}%"></span>
+                        </div>
+                        <span>{{ row.count }}</span>
+                    </div>
+                {% endfor %}
+            </aside>
+
+            <div>
+                <form class="form-panel" action="{% url 'pages:product_detail' product.id %}" method="post">
+                    {% csrf_token %}
+                    <h3 data-uk="Написати відгук" data-en="Write a review">Write a review</h3>
+                    <div>
+                        <label for="{{ rating_form.user_name.id_for_label }}" data-uk="Ім'я" data-en="Name">Name</label>
+                        {{ rating_form.user_name }}
+                    </div>
+                    <div>
+                        <label data-uk="Оцінка" data-en="Rating">Rating</label>
+                        <div class="star-options">
+                            {% for radio in rating_form.score %}
+                                {{ radio.tag }}
+                                <label for="{{ radio.id_for_label }}">★</label>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div>
+                        <label for="{{ rating_form.comment.id_for_label }}" data-uk="Коментар" data-en="Comment">Comment</label>
+                        {{ rating_form.comment }}
+                    </div>
+                    <button class="submit-button" type="submit" name="rating_submit" data-uk="Надіслати відгук" data-en="Submit review">Submit review</button>
+                </form>
+
+                <div class="rating-list">
+                    {% for rating in ratings %}
+                        <article class="review-card">
+                            <strong>{{ rating.user_name }}</strong>
+                            <div class="stars">
+                                {% for _ in "12345" %}
+                                    {% if forloop.counter <= rating.score %}★{% else %}☆{% endif %}
+                                {% endfor %}
+                            </div>
+                            <p>{{ rating.comment }}</p>
+                        </article>
+                    {% empty %}
+                        <p data-uk="Коментарів ще немає." data-en="No comments yet.">No comments yet.</p>
+                    {% endfor %}
+                </div>
+            </div>
         </div>
     </section>
 {% endblock %}

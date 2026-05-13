@@ -97,12 +97,27 @@ def product_detail(request, pk):
             return redirect("pages:cart")
 
     rating_summary = product.ratings.aggregate(average=Avg("score"))
+    rating_counts = {
+        score: product.ratings.filter(score=score).count()
+        for score in range(5, 0, -1)
+    }
+    rating_count_total = sum(rating_counts.values())
+    rating_rows = [
+        {
+            "score": score,
+            "count": count,
+            "percent": int((count / rating_count_total) * 100) if rating_count_total else 0,
+        }
+        for score, count in rating_counts.items()
+    ]
     context = {
         **site_context(request),
         "title": product.name,
         "product": product,
         "rating_form": rating_form,
         "average_rating": rating_summary["average"],
+        "rating_rows": rating_rows,
+        "rating_count_total": rating_count_total,
         "ratings": product.ratings.all(),
     }
     return render(request, "pages/product_detail.html", context)

@@ -34,11 +34,16 @@ class NewsletterSubscriberForm(forms.ModelForm):
 
 
 class ProductRatingForm(forms.ModelForm):
+    score = forms.TypedChoiceField(
+        coerce=int,
+        choices=[(5, "5"), (4, "4"), (3, "3"), (2, "2"), (1, "1")],
+        widget=forms.RadioSelect,
+    )
+
     class Meta:
         model = ProductRating
         fields = ["user_name", "score", "comment"]
         widgets = {
             "user_name": forms.TextInput(attrs={"placeholder": "Your name"}),
-            "score": forms.NumberInput(attrs={"min": 1, "max": 5}),
             "comment": forms.Textarea(attrs={"rows": 3, "placeholder": "Your feedback"}),
         }
