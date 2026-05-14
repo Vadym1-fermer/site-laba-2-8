@@ -2,7 +2,21 @@
 
 {% block content %}
     <section class="hero">
-        <h1>{{ title }}</h1>
+        {% if title == "Login" %}
+            <h1 data-uk="Увійти в акаунт" data-en="Login to account">Login to account</h1>
+            <p data-uk="Увійди, щоб відкрити особистий кабінет і переглянути свої замовлення." data-en="Log in to open your account and view your orders.">Log in to open your account and view your orders.</p>
+        {% elif title == "Register" %}
+            <h1 data-uk="Створити акаунт" data-en="Create account">Create account</h1>
+            <p data-uk="Зареєструйся, щоб замовлення зберігалися в особистому кабінеті." data-en="Register so your orders are saved in your account.">Register so your orders are saved in your account.</p>
+        {% elif title == "Reset password" %}
+            <h1 data-uk="Відновлення пароля" data-en="Password recovery">Password recovery</h1>
+            <p data-uk="Введи email, який вже зареєстрований на сайті. Після цього на нього буде відправлено тимчасовий код для зміни пароля." data-en="Enter the email already registered on the site. A temporary code for changing the password will be sent to it.">Enter the email already registered on the site. A temporary code for changing the password will be sent to it.</p>
+        {% elif title == "Enter reset code" %}
+            <h1 data-uk="Ввести код відновлення" data-en="Enter recovery code">Enter recovery code</h1>
+            <p data-uk="Введи email, код з повідомлення та новий пароль." data-en="Enter your email, the code from the message, and a new password.">Enter your email, the code from the message, and a new password.</p>
+        {% else %}
+            <h1>{{ title }}</h1>
+        {% endif %}
         {% if title == "Login" %}
             <a class="button" href="{% url 'pages:register' %}" data-uk="Зареєструватись" data-en="Register">Register</a>
             <a class="button" href="{% url 'pages:password_reset_request' %}" data-uk="Забули пароль?" data-en="Forgot password?">Forgot password?</a>
@@ -15,7 +29,17 @@
         <form class="form-grid" method="post">
             {% csrf_token %}
             {{ form.as_p }}
-            <button class="submit-button" type="submit">{{ button_text }}</button>
+            {% if title == "Login" %}
+                <button class="submit-button" type="submit" data-uk="Увійти" data-en="Login">Login</button>
+            {% elif title == "Register" %}
+                <button class="submit-button" type="submit" data-uk="Зареєструватись" data-en="Register">Register</button>
+            {% elif title == "Reset password" %}
+                <button class="submit-button" type="submit" data-uk="Відправити код для відновлення пароля на email" data-en="Send password reset code">Send password reset code</button>
+            {% elif title == "Enter reset code" %}
+                <button class="submit-button" type="submit" data-uk="Змінити пароль" data-en="Change password">Change password</button>
+            {% else %}
+                <button class="submit-button" type="submit">{{ button_text }}</button>
+            {% endif %}
         </form>
     </section>
 {% endblock %}

@@ -332,7 +332,7 @@ def password_reset_request(request):
             **site_context(request),
             "title": "Reset password",
             "form": form,
-            "button_text": "Send code",
+            "button_text": "Send password reset code",
         },
     )
 

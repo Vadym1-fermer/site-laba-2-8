@@ -3,7 +3,38 @@
 {% block content %}
     <section class="hero">
         <h1 data-uk="Особистий кабінет" data-en="Account">Account</h1>
-        <p>{{ user.username }}</p>
+        <p data-uk="Тут видно дані твого акаунта та попередні замовлення." data-en="Here you can see your account details and previous orders.">Here you can see your account details and previous orders.</p>
+    </section>
+
+    <section class="account-grid">
+        <article class="account-card">
+            <h2 data-uk="Мій акаунт" data-en="My account">My account</h2>
+            <div class="account-fields">
+                <p>
+                    <span data-uk="Логін" data-en="Username">Username</span>
+                    <strong>{{ user.username }}</strong>
+                </p>
+                <p>
+                    <span>Email</span>
+                    <strong>{% if user.email %}{{ user.email }}{% else %}<span data-uk="Email не додано" data-en="No email added">No email added</span>{% endif %}</strong>
+                </p>
+                <p>
+                    <span data-uk="Тип акаунта" data-en="Account type">Account type</span>
+                    <strong>
+                        {% if user.is_staff %}
+                            <span data-uk="Адміністратор" data-en="Administrator">Administrator</span>
+                        {% else %}
+                            <span data-uk="Покупець" data-en="Customer">Customer</span>
+                        {% endif %}
+                    </strong>
+                </p>
+            </div>
+            <div class="account-actions">
+                <a class="button" href="{% url 'pages:home' %}" data-uk="До покупок" data-en="Continue shopping">Continue shopping</a>
+                <a class="button" href="{% url 'pages:password_reset_request' %}" data-uk="Змінити пароль" data-en="Change password">Change password</a>
+                <a class="button account-logout" href="{% url 'pages:logout' %}" data-uk="Вийти з акаунта" data-en="Logout">Logout</a>
+            </div>
+        </article>
     </section>
 
     <section>

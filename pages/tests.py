@@ -193,6 +193,7 @@ class PagesTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTrue(User.objects.filter(username="newuser").exists())
         self.assertContains(response, "Account")
+        self.assertContains(response, "My account")
 
     @override_settings(EMAIL_BACKEND="django.core.mail.backends.locmem.EmailBackend")
     def test_password_reset_sends_code_and_changes_password(self):
@@ -240,6 +241,8 @@ class PagesTests(TestCase):
         response = self.client.get(reverse("pages:account"))
         self.assertContains(response, "White T-shirt")
         self.assertContains(response, "My orders")
+        self.assertContains(response, "buyer")
+        self.assertContains(response, "Logout")
 
         self.client.force_login(admin)
         response = self.client.get(reverse("pages:account"))

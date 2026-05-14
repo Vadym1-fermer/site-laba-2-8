@@ -296,6 +296,57 @@
             margin-top: 24px;
         }
 
+        .account-grid {
+            display: grid;
+            gap: 20px;
+            margin-bottom: 32px;
+        }
+
+        .account-card {
+            padding: 22px;
+            background: linear-gradient(135deg, rgba(56, 189, 248, 0.08), rgba(34, 197, 94, 0.08)), var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+        }
+
+        .account-fields {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+            gap: 12px;
+            margin: 18px 0;
+        }
+
+        .account-fields p {
+            margin: 0;
+            padding: 14px;
+            background: var(--surface-soft);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 15px;
+        }
+
+        .account-fields span,
+        .account-fields strong {
+            display: block;
+        }
+
+        .account-fields strong {
+            margin-top: 4px;
+            color: var(--text);
+            font-size: 18px;
+        }
+
+        .account-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .account-logout {
+            color: #fecaca;
+            border-color: #7f1d1d;
+        }
+
         label {
             display: block;
             margin: 12px 0 6px;
