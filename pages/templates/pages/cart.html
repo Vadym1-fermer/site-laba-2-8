@@ -13,6 +13,10 @@
                     <h2>{{ item.product.name }}</h2>
                     <p>{{ item.product.category.name }} / {{ item.product.color }}</p>
                     <p class="product-meta"><span data-uk="Кількість" data-en="Quantity">Quantity</span>: {{ item.quantity }}</p>
+                    <form action="{% url 'pages:remove_from_cart' item.product.id %}" method="post">
+                        {% csrf_token %}
+                        <button class="remove-button" type="submit" data-uk="Видалити" data-en="Remove">Remove</button>
+                    </form>
                 </div>
                 <p class="price">{{ item.subtotal }} UAH</p>
             </article>

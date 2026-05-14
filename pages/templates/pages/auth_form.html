@@ -4,7 +4,10 @@
     <section class="hero">
         <h1>{{ title }}</h1>
         {% if title == "Login" %}
-            <a class="button" href="{% url 'pages:password_reset_request' %}" data-uk="Змінити пароль" data-en="Reset password">Reset password</a>
+            <a class="button" href="{% url 'pages:register' %}" data-uk="Зареєструватись" data-en="Register">Register</a>
+            <a class="button" href="{% url 'pages:password_reset_request' %}" data-uk="Забули пароль?" data-en="Forgot password?">Forgot password?</a>
+        {% elif title == "Register" %}
+            <a class="button" href="{% url 'pages:login' %}" data-uk="Увійти" data-en="Login">Login</a>
         {% endif %}
     </section>
 

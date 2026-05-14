@@ -160,6 +160,18 @@ def cart(request):
     return render(request, "pages/cart.html", context)
 
 
+def remove_from_cart(request, pk):
+    cart_data = get_cart(request)
+    product_id = str(pk)
+
+    if request.method == "POST" and product_id in cart_data:
+        del cart_data[product_id]
+        request.session.modified = True
+        messages.success(request, "Product removed from cart.")
+
+    return redirect("pages:cart")
+
+
 @login_required
 def checkout(request):
     cart_data = get_cart(request)

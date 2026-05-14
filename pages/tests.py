@@ -135,6 +135,20 @@ class PagesTests(TestCase):
         self.assertContains(response, "Cart")
         self.assertContains(response, "White T-shirt")
         self.assertContains(response, "499.00 UAH")
+        self.assertContains(response, "Remove")
+
+    def test_product_can_be_removed_from_cart(self):
+        session = self.client.session
+        session["cart"] = {str(self.product.id): 1}
+        session.save()
+
+        response = self.client.post(
+            reverse("pages:remove_from_cart", args=[self.product.id]),
+            follow=True,
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Your cart is empty")
 
     def test_newsletter_signup_saves_email(self):
         response = self.client.post(
@@ -153,8 +167,7 @@ class PagesTests(TestCase):
     def test_auth_buttons_change_by_user_state(self):
         anonymous_response = self.client.get(reverse("pages:home"))
 
-        self.assertContains(anonymous_response, "Login")
-        self.assertContains(anonymous_response, "Register")
+        self.assertContains(anonymous_response, "Login / Register")
         self.assertNotContains(anonymous_response, "Logout")
 
         user = User.objects.create_user(username="vadim", password="StrongPass12345")
@@ -163,7 +176,7 @@ class PagesTests(TestCase):
 
         self.assertContains(auth_response, "Account")
         self.assertContains(auth_response, "Logout")
-        self.assertNotContains(auth_response, "Register")
+        self.assertNotContains(auth_response, "Login / Register")
 
     def test_register_page_creates_authenticated_user(self):
         response = self.client.post(
