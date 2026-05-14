@@ -39,7 +39,7 @@ class PagesTests(TestCase):
             image_url="https://example.com/tshirt.jpg",
             description="Basic cotton T-shirt",
         )
-        Product.objects.create(
+        self.other_product = Product.objects.create(
             category=self.other_category,
             name="Blue Jeans",
             size="32",
@@ -95,7 +95,7 @@ class PagesTests(TestCase):
         self.assertContains(response, "White T-shirt")
         self.assertContains(response, "Black T-shirt")
         self.assertContains(response, "Oversized T-shirt")
-        self.assertNotContains(response, "Blue Jeans")
+        self.assertNotContains(response, reverse("pages:product_detail", args=[self.other_product.id]))
 
     def test_product_page_has_photo_price_and_buy_button(self):
         response = self.client.get(reverse("pages:product_detail", args=[self.product.id]))
@@ -167,16 +167,16 @@ class PagesTests(TestCase):
     def test_auth_buttons_change_by_user_state(self):
         anonymous_response = self.client.get(reverse("pages:home"))
 
-        self.assertContains(anonymous_response, "Login / Register")
-        self.assertNotContains(anonymous_response, "Logout")
+        self.assertContains(anonymous_response, 'href="/login/"')
+        self.assertNotContains(anonymous_response, 'href="/logout/"')
 
         user = User.objects.create_user(username="vadim", password="StrongPass12345")
         self.client.force_login(user)
         auth_response = self.client.get(reverse("pages:home"))
 
-        self.assertContains(auth_response, "Account")
-        self.assertContains(auth_response, "Logout")
-        self.assertNotContains(auth_response, "Login / Register")
+        self.assertContains(auth_response, 'href="/account/"')
+        self.assertContains(auth_response, 'href="/logout/"')
+        self.assertNotContains(auth_response, 'href="/login/"')
 
     def test_register_page_creates_authenticated_user(self):
         response = self.client.post(

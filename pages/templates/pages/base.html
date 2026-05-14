@@ -497,6 +497,162 @@
     <script>
         const languageButton = document.querySelector("[data-language-toggle]");
         const translatableItems = document.querySelectorAll("[data-uk][data-en]");
+        const enToUk = {
+            "About": "Про нас",
+            "Account": "Кабінет",
+            "Add a product to the cart and create an order.": "Додай товар у кошик і оформи замовлення.",
+            "Add products for this category in the admin panel.": "Додай товари для цієї категорії в адмін-панелі.",
+            "Add products in the Django admin panel to show them on the home page.": "Додай товари в адмін-панелі Django, щоб показати їх на головній сторінці.",
+            "Add to cart": "Додати в кошик",
+            "All orders": "Усі замовлення",
+            "All products": "Усі товари",
+            "Already have an account?": "Вже маєш акаунт?",
+            "Average rating": "Середня оцінка",
+            "Back to": "Назад до",
+            "Back to home": "Назад на головну",
+            "Basic cotton T-shirt": "Базова бавовняна футболка",
+            "Basic white cotton T-shirt.": "Базова біла бавовняна футболка.",
+            "Be the first to rate this product.": "Будь першим, хто оцінить товар.",
+            "Beige": "Бежевий",
+            "Beige Hoodie": "Бежеве худі",
+            "Black": "Чорний",
+            "Black Hoodie": "Чорне худі",
+            "Black Jeans": "Чорні джинси",
+            "Black T-shirt": "Чорна футболка",
+            "Blue": "Синій",
+            "Blue Jeans": "Сині джинси",
+            "Cart": "Кошик",
+            "Change password": "Змінити пароль",
+            "Choose a category in the header menu or open a product page to see photos, price, and details from the database.": "Обери категорію в меню або відкрий сторінку товару, щоб побачити фото, ціну й деталі з бази даних.",
+            "Classic blue jeans": "Класичні сині джинси",
+            "Classic straight fit blue jeans.": "Класичні прямі сині джинси.",
+            "Clothing Store": "Магазин одягу",
+            "Comment": "Коментар",
+            "Comfortable beige hoodie for relaxed daily wear.": "Зручне бежеве худі для щоденного носіння.",
+            "Contacts": "Контакти",
+            "Continue shopping": "Продовжити покупки",
+            "Create order": "Оформити замовлення",
+            "Dark denim jeans with a clean casual look.": "Темні джинси для акуратного повсякденного образу.",
+            "Dark mode catalog for comfortable shopping and quick category browsing.": "Темний каталог для зручного перегляду товарів і швидкого вибору категорій.",
+            "Email": "Електронна пошта",
+            "Enter reset code": "Введіть код відновлення",
+            "Forgot password?": "Забули пароль?",
+            "Good quality": "Хороша якість",
+            "Gray": "Сірий",
+            "Green": "Зелений",
+            "Green Hoodie": "Зелене худі",
+            "Home": "Головна",
+            "Hoodies": "Худі",
+            "Jeans": "Джинси",
+            "Light Blue Jeans": "Світло-сині джинси",
+            "Light blue": "Світло-синій",
+            "Light denim jeans for casual everyday outfits.": "Світлі джинси для повсякденних образів.",
+            "Log in to create an order": "Увійдіть, щоб оформити замовлення",
+            "Login": "Увійти",
+            "Login / Register": "Увійти / Зареєструватись",
+            "Logout": "Вийти",
+            "Loose gray T-shirt": "Вільна сіра футболка",
+            "Loose gray T-shirt for a relaxed streetwear look.": "Вільна сіра футболка для розслабленого streetwear-образу.",
+            "Minimal black cotton T-shirt": "Мінімалістична чорна бавовняна футболка",
+            "Minimal black cotton T-shirt for everyday outfits.": "Мінімалістична чорна бавовняна футболка для щоденних образів.",
+            "My orders": "Мої замовлення",
+            "Name": "Ім'я",
+            "New password": "Новий пароль",
+            "No comments yet.": "Коментарів ще немає.",
+            "No orders yet": "Замовлень ще немає",
+            "No products in this category": "У цій категорії ще немає товарів",
+            "No products yet": "Товарів ще немає",
+            "No ratings yet": "Оцінок ще немає",
+            "No ratings yet.": "Оцінок ще немає.",
+            "Open a product page and add an item to the cart.": "Відкрий сторінку товару та додай його в кошик.",
+            "Order created successfully.": "Замовлення успішно створено.",
+            "Our store offers comfortable everyday clothing with simple ordering and clear categories.": "Наш магазин пропонує зручний повсякденний одяг, просте оформлення замовлень і зрозумілі категорії.",
+            "Oversized T-shirt": "Оверсайз футболка",
+            "Password": "Пароль",
+            "Password changed. You can log in now.": "Пароль змінено. Тепер можна увійти.",
+            "Password confirmation": "Підтвердження пароля",
+            "Please enter a valid email for newsletter signup.": "Введіть коректну пошту для підписки.",
+            "Product added to cart.": "Товар додано в кошик.",
+            "Product removed from cart.": "Товар видалено з кошика.",
+            "Products": "Товари",
+            "Products in this category": "Товари в цій категорії",
+            "Quantity": "Кількість",
+            "Rate this product": "Оцінити товар",
+            "Rating": "Оцінка",
+            "Register": "Зареєструватись",
+            "Registration completed.": "Реєстрацію завершено.",
+            "Remove": "Видалити",
+            "Reset password": "Скинути пароль",
+            "Reviews and ratings": "Відгуки та оцінки",
+            "Score from 1 to 5": "Оцінка від 1 до 5",
+            "Send code": "Надіслати код",
+            "Size": "Розмір",
+            "Soft green hoodie with a comfortable fit.": "М'яке зелене худі зі зручною посадкою.",
+            "Soft hoodie with a minimal dark look.": "М'яке худі в мінімалістичному темному стилі.",
+            "Submit rating": "Надіслати оцінку",
+            "Submit review": "Надіслати відгук",
+            "Subscribe": "Підписатися",
+            "T-shirts": "Футболки",
+            "The two password fields didn’t match.": "Два поля пароля не збігаються.",
+            "This contacts page also receives its content from context.": "Ця сторінка контактів також отримує вміст із контексту.",
+            "Total": "Разом",
+            "Username": "Ім'я користувача",
+            "View product": "Переглянути товар",
+            "White": "Білий",
+            "White T-shirt": "Біла футболка",
+            "Write a review": "Написати відгук",
+            "You are subscribed to the newsletter.": "Ви підписані на розсилку.",
+            "Your cart is empty": "Кошик порожній",
+            "Your rating has been saved.": "Вашу оцінку збережено.",
+            "email@example.com": "email@example.com",
+            "reviews": "відгуків"
+        };
+        const ukToEn = Object.fromEntries(
+            Object.entries(enToUk).map(([english, ukrainian]) => [ukrainian, english]),
+        );
+        const placeholderTranslations = {
+            en: {
+                "Your name": "Твоє ім'я",
+                "Your feedback": "Твій відгук",
+                "New password": "Новий пароль",
+            },
+            uk: {
+                "Твоє ім'я": "Your name",
+                "Твій відгук": "Your feedback",
+                "Новий пароль": "New password",
+            },
+        };
+
+        function translateLooseText(language) {
+            const dictionary = language === "uk" ? enToUk : ukToEn;
+            const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+            const skippedParents = new Set(["SCRIPT", "STYLE", "TEXTAREA"]);
+
+            while (walker.nextNode()) {
+                const node = walker.currentNode;
+                if (skippedParents.has(node.parentElement?.tagName)) {
+                    continue;
+                }
+
+                const original = node.textContent;
+                const trimmed = original.trim();
+                const hasColon = trimmed.endsWith(":");
+                const lookup = hasColon ? trimmed.slice(0, -1) : trimmed;
+                if (!trimmed || !dictionary[lookup]) {
+                    continue;
+                }
+
+                node.textContent = original.replace(trimmed, `${dictionary[lookup]}${hasColon ? ":" : ""}`);
+            }
+
+            document.querySelectorAll("input[placeholder], textarea[placeholder]").forEach((field) => {
+                const current = field.getAttribute("placeholder");
+                const translated = placeholderTranslations[language === "uk" ? "en" : "uk"][current];
+                if (translated) {
+                    field.setAttribute("placeholder", translated);
+                }
+            });
+        }
 
         function setLanguage(language) {
             document.documentElement.lang = language;
@@ -509,6 +665,7 @@
                 language === "uk" ? "Перемкнути мову на англійську" : "Switch language to Ukrainian",
             );
             localStorage.setItem("siteLanguage", language);
+            translateLooseText(language);
         }
 
         languageButton.addEventListener("click", () => {
